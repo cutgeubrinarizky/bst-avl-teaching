@@ -13,6 +13,31 @@
   margin-bottom: 18px;
 }
 
+.topic-switch {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 18px 18px 0;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.topic-switch button {
+  border: 1px solid #3b4479;
+  background: #121833;
+  color: #dce2ff;
+  border-radius: 999px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.topic-switch button.active {
+  background: #4d67ff;
+  border-color: #7e91ff;
+  color: #ffffff;
+}
+
 .kicker {
   margin: 0 0 8px;
   font-size: 12px;
@@ -760,8 +785,229 @@ textarea {
   font-size: 12px;
 }
 
+.rbt-shell {
+  color: #f4f0e8;
+}
+
+.rbt-hero {
+  background: linear-gradient(135deg, #17110f, #2a1117 58%, #251f16);
+  border-color: #71323a;
+}
+
+.rbt-hero .kicker,
+.rbt-step-badge {
+  color: #ffe4d6;
+}
+
+.rbt-card,
+.rbt-builder-card,
+.rbt-walk-card,
+.rbt-case-card,
+.rbt-source-card,
+.rbt-app-card {
+  border-color: #70434a;
+}
+
+.rbt-lesson-item {
+  background: #251921;
+  border-color: #70434a;
+  color: #f1dfd4;
+}
+
+.rbt-properties-card {
+  border-color: #6b4d2f;
+}
+
+.rbt-property-grid,
+.rbt-delete-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.rbt-property,
+.rbt-delete-rule {
+  min-height: 118px;
+  border: 1px solid #654044;
+  border-radius: 12px;
+  padding: 14px;
+  background: #18131c;
+}
+
+.rbt-property span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #a52d3d;
+  color: #fff;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.rbt-property p,
+.rbt-delete-rule p,
+.rbt-analogy p {
+  margin: 0;
+  color: #e7d0c8;
+  line-height: 1.55;
+}
+
+.rbt-builder-grid {
+  grid-template-columns: 300px minmax(0, 1fr) 300px;
+}
+
+.rbt-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.rbt-canvas-panel,
+.rbt-walk-canvas {
+  background: radial-gradient(circle at top, #342021 0%, #0e0f17 74%);
+  border-color: #75434c;
+}
+
+.rbt-canvas-panel .tree-scroll,
+.rbt-walk-canvas .tree-scroll {
+  min-height: 410px;
+  display: grid;
+  align-items: center;
+  padding-top: 18px;
+  padding-bottom: 24px;
+  overflow: hidden;
+}
+
+.rbt-svg {
+  overflow: visible;
+  width: 100%;
+  max-height: 430px;
+}
+
+.rbt-bh-label {
+  font-size: 10px;
+  font-weight: 800;
+  fill: #f2d9ce;
+  pointer-events: none;
+}
+
+.rbt-color-dot {
+  stroke: rgba(255, 255, 255, 0.72);
+  stroke-width: 1.5;
+}
+
+.rbt-color-dot.red {
+  fill: #d9283f;
+}
+
+.rbt-color-dot.black {
+  fill: #111318;
+}
+
+.rbt-svg .tree-node-text {
+  font-size: 14px;
+}
+
+.rbt-edge {
+  stroke: #b28d8f;
+}
+
+.rbt-node {
+  stroke-width: 2.5;
+}
+
+.rbt-node.red {
+  fill: #d9283f;
+  stroke: #ffd5dc;
+}
+
+.rbt-node.black {
+  fill: #16171c;
+  stroke: #f3eee7;
+}
+
+.rbt-node.focus {
+  stroke: #facc15;
+  stroke-width: 4;
+}
+
+.rbt-legend {
+  margin-top: 16px;
+}
+
+.rbt-legend .legend-chip {
+  max-width: none;
+  padding: 9px 10px;
+}
+
+.rbt-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.rbt-summary-grid .stat {
+  min-height: 78px;
+}
+
+.rbt-summary-grid .stat strong {
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.rbt-legend-black .legend-dot {
+  background: #111318;
+}
+
+.rbt-legend-red .legend-dot {
+  background: #d9283f;
+}
+
+.rbt-legend-nil .legend-dot {
+  background: #f5efe8;
+}
+
+.rbt-legend-focus .legend-dot {
+  background: #d9283f;
+  border-color: #facc15;
+}
+
+.rbt-case-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 16px;
+}
+
+.rbt-case-explain h3,
+.rbt-delete-rule h3,
+.rbt-analogy h3 {
+  margin: 12px 0 10px;
+}
+
+.rbt-delete-card {
+  border-color: #7a4a35;
+}
+
+.rbt-delete-rule {
+  background: #19151a;
+}
+
+.rbt-source-card .source-code-block {
+  border-color: #5f3b3f;
+  background: #120f12;
+  color: #ffe1d6;
+}
+
 @media (max-width: 1100px) {
   .builder-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rbt-builder-grid {
     grid-template-columns: 1fr;
   }
 
@@ -794,6 +1040,10 @@ textarea {
   }
 
   .source-detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .rbt-case-layout {
     grid-template-columns: 1fr;
   }
 

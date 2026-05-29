@@ -1,16 +1,26 @@
-# React + Vite
+# BST AVL Teaching
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interactive teaching app for BST, AVL Tree, and Red-Black Tree material.
 
-Currently, two official plugins are available:
+## Struktur Folder
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- `src/App.jsx`: entry UI kecil untuk memilih materi AVL atau Red-Black Tree.
+- `src/components/`: komponen umum yang dipakai lintas materi.
+- `src/features/avl/`: halaman, canvas, dan logic untuk materi AVL/BST.
+- `src/features/rbt/`: halaman interaktif untuk materi Red-Black Tree.
+- `src/App.css`: style global aplikasi.
+- `src/index.css`: reset dasar halaman.
 
-## React Compiler
+## Script
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm run dev
+npm run lint
+npm run build
+```
 
-## Expanding the ESLint configuration
+Build production memakai base path `/bst-avl-teaching/`, sehingga cocok untuk GitHub Pages di:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```text
+https://cutgeubrinarizky.github.io/bst-avl-teaching/
+```
