@@ -183,8 +183,124 @@ else
   },
 };
 
+const DEFAULT_RBT_CODE = `#include <stdio.h>
+#include <stdlib.h>
+
+enum Color { RED, BLACK };
+
+struct Node {
+  int data;
+  enum Color color;
+  struct Node *left;
+  struct Node *right;
+  struct Node *parent;
+};
+
+int main() {
+  struct Node *root = NULL;
+
+  root = insertNode(root, 10);
+  root = insertNode(root, 20);
+  root = insertNode(root, 30);
+  root = insertNode(root, 15);
+  root = insertNode(root, 25);
+  root = insertNode(root, 5);
+  root = deleteNode(root, 20);
+
+  return 0;
+}`;
+
+const RBT_DELETE_STEPS = [
+  {
+    short: "Awal",
+    title: "Tree awal sebelum deletion",
+    tree: treeFromRbSpec(
+      rbSpec(20, "black", rbSpec(10, "black", rbSpec(5, "red"), rbSpec(15, "red")), rbSpec(30, "black", rbSpec(25, "red"), rbSpec(40, "red"))),
+    ),
+    highlight: 20,
+    bullets: [
+      "Deletion RBT tetap dimulai dengan pencarian BST.",
+      "Warna node target menentukan apakah black-height berkurang.",
+      "Contoh ini memakai target 20 supaya terlihat proses successor dan validasi warna.",
+    ],
+    code: `target = search(root, 20);`,
+  },
+  {
+    short: "Successor",
+    title: "Target dua anak diganti inorder successor",
+    tree: treeFromRbSpec(
+      rbSpec(25, "black", rbSpec(10, "black", rbSpec(5, "red"), rbSpec(15, "red")), rbSpec(30, "black", null, rbSpec(40, "red"))),
+    ),
+    highlight: 25,
+    bullets: [
+      "Karena node 20 punya dua anak, key diganti dengan successor dari subtree kanan.",
+      "Successor adalah 25, yaitu node paling kiri di subtree kanan.",
+      "Node 25 fisik kemudian dihapus dari posisi lamanya.",
+    ],
+    code: `successor = minValueNode(root->right);
+root->data = successor->data;`,
+  },
+  {
+    short: "Kasus merah",
+    title: "Jika node fisik yang hilang merah, selesai",
+    tree: treeFromRbSpec(
+      rbSpec(25, "black", rbSpec(10, "black", rbSpec(5, "red"), rbSpec(15, "red")), rbSpec(30, "black", null, rbSpec(40, "red"))),
+    ),
+    highlight: 30,
+    bullets: [
+      "Pada contoh ini successor 25 berwarna merah.",
+      "Menghapus node merah tidak mengurangi black-height.",
+      "Tidak ada double black, jadi tidak perlu rotation atau recoloring tambahan.",
+    ],
+    code: `if (deletedColor == RED)
+  return root;`,
+  },
+  {
+    short: "Double black",
+    title: "Kasus berat: black node hilang",
+    tree: treeFromRbSpec(
+      rbSpec(25, "black", rbSpec(10, "black", rbSpec(5, "red"), rbSpec(15, "red")), rbSpec(40, "black", rbSpec(30, "red"))),
+    ),
+    highlight: 40,
+    bullets: [
+      "Jika node hitam yang hilang diganti NIL/black child, muncul double black.",
+      "Perbaikannya melihat sibling: merah, hitam dengan dua nephew hitam, atau hitam dengan nephew merah.",
+      "Tujuannya selalu sama: black-height tiap path kembali sama.",
+    ],
+    code: `if (deletedColor == BLACK && replacementColor == BLACK)
+  fixDoubleBlack(replacement);`,
+  },
+  {
+    short: "Valid",
+    title: "Akhir: root hitam dan tidak ada double red",
+    tree: treeFromRbSpec(
+      rbSpec(25, "black", rbSpec(10, "black", rbSpec(5, "red"), rbSpec(15, "red")), rbSpec(40, "black", rbSpec(30, "red"))),
+    ),
+    highlight: 25,
+    bullets: [
+      "Root tetap hitam.",
+      "Tidak ada node merah yang memiliki anak merah.",
+      "Black-height tiap jalur menuju NIL kembali konsisten.",
+    ],
+    code: `root->color = BLACK;`,
+  },
+];
+
 function makeRbNode(value, color = "red") {
   return { value, color, left: null, right: null, parent: null };
+}
+
+function rbSpec(value, color = "black", left = null, right = null) {
+  return { value, color, left, right };
+}
+
+function treeFromRbSpec(spec, parent = null) {
+  if (!spec) return null;
+  const node = makeRbNode(spec.value, spec.color);
+  node.parent = parent;
+  node.left = treeFromRbSpec(spec.left, node);
+  node.right = treeFromRbSpec(spec.right, node);
+  return node;
 }
 
 function compareValues(a, b) {
@@ -336,6 +452,198 @@ function buildRbt(values) {
   return { root, logs };
 }
 
+function countNodes(node) {
+  if (!node) return 0;
+  return countNodes(node.left) + countNodes(node.right) + 1;
+}
+
+function findNode(node, value) {
+  if (!node) return null;
+  const comparison = compareValues(value, node.value);
+  if (comparison === 0) return node;
+  return comparison < 0 ? findNode(node.left, value) : findNode(node.right, value);
+}
+
+function validateRbt(root) {
+  const issues = [];
+  if (root && root.color !== "black") issues.push("Root belum black.");
+
+  function walk(node) {
+    if (!node) return 1;
+    if (node.color === "red") {
+      if (getColor(node.left) === "red" || getColor(node.right) === "red") {
+        issues.push(`Double red di sekitar node ${node.value}.`);
+      }
+    }
+
+    const leftBh = walk(node.left);
+    const rightBh = walk(node.right);
+    if (leftBh !== rightBh) {
+      issues.push(`Black-height tidak sama di node ${node.value}.`);
+    }
+    return leftBh + (node.color === "black" ? 1 : 0);
+  }
+
+  const blackHeight = walk(root);
+  return {
+    valid: issues.length === 0,
+    blackHeight,
+    issues: [...new Set(issues)],
+  };
+}
+
+function parseCodeValue(raw) {
+  return parseValue(raw.replace(/;$/, ""));
+}
+
+function parseCodeValues(raw) {
+  return raw
+    .split(",")
+    .map(parseCodeValue)
+    .filter((value) => value !== null);
+}
+
+function lastCodeArgument(raw) {
+  const parts = raw.split(",");
+  return parts.at(-1) ?? raw;
+}
+
+function stripCodeComment(line) {
+  const hashIndex = line.indexOf("#");
+  const slashIndex = line.indexOf("//");
+  const cutPoints = [hashIndex, slashIndex].filter((index) => index >= 0);
+  const cleaned = cutPoints.length ? line.slice(0, Math.min(...cutPoints)) : line;
+  return cleaned.trim().replace(/;$/, "").trim();
+}
+
+function getRunnableCodeLines(source) {
+  const lines = source.split(/\r?\n/);
+  const mainIndex = lines.findIndex((line) => /\bint\s+main\s*\(/i.test(line));
+  if (mainIndex < 0) {
+    return lines.map((raw, index) => ({ raw, lineNumber: index + 1 }));
+  }
+
+  const runnable = [];
+  let depth = 0;
+  let enteredMain = false;
+
+  for (let index = mainIndex; index < lines.length; index += 1) {
+    const raw = lines[index];
+    const opens = (raw.match(/{/g) ?? []).length;
+    const closes = (raw.match(/}/g) ?? []).length;
+
+    if (!enteredMain) {
+      depth += opens - closes;
+      enteredMain = opens > 0;
+      continue;
+    }
+
+    if (depth <= 0) break;
+    const trimmed = raw.trim();
+    if (trimmed !== "}" && trimmed !== "};") {
+      runnable.push({ raw, lineNumber: index + 1 });
+    }
+    depth += opens - closes;
+  }
+
+  return runnable;
+}
+
+function shouldSkipCodeLine(line) {
+  return (
+    line === "{" ||
+    line === "}" ||
+    /^#/.test(line) ||
+    /^if\b/i.test(line) ||
+    /^else\b/i.test(line) ||
+    /^while\b/i.test(line) ||
+    /^for\b/i.test(line) ||
+    /^return\b/i.test(line) ||
+    /^enum\b/i.test(line) ||
+    /^struct\b/i.test(line) ||
+    /^printf\s*\(/i.test(line) ||
+    /^\w+->/i.test(line)
+  );
+}
+
+function runRbtCode(source) {
+  let values = [];
+  const errors = [];
+  const trace = [];
+
+  const unique = (nextValues) => {
+    const seen = new Set();
+    return nextValues.filter((value) => {
+      const key = `${typeof value}:${value}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+
+  getRunnableCodeLines(source).forEach(({ raw: rawLine, lineNumber }) => {
+    const line = stripCodeComment(rawLine);
+    if (!line || shouldSkipCodeLine(line)) return;
+
+    const nullRootMatch = line.match(/^\w+\s*=\s*NULL$/i);
+    const insertMatch = line.match(/^(?:\w+\s*=\s*)?(insert|insertNode)\s*\((.+)\)$/i);
+    const insertManyMatch = line.match(/^insertMany\s*\(\s*\[(.*)\]\s*\)$/i);
+    const deleteMatch = line.match(/^(?:\w+\s*=\s*)?(delete|remove|deleteNode)\s*\((.+)\)$/i);
+    const clearMatch = line.match(/^clear\s*\(\s*\)$/i);
+
+    if (insertMatch) {
+      const value = parseCodeValue(lastCodeArgument(insertMatch[2]));
+      if (value === null) {
+        errors.push(`Baris ${lineNumber}: nilai insert tidak valid.`);
+        return;
+      }
+      values = unique([...values, value]);
+      trace.push(`Baris ${lineNumber}: insert ${value} sebagai red node`);
+      return;
+    }
+
+    if (insertManyMatch) {
+      const nextValues = parseCodeValues(insertManyMatch[1]);
+      if (!nextValues.length) {
+        errors.push(`Baris ${lineNumber}: insertMany perlu minimal satu nilai.`);
+        return;
+      }
+      values = unique([...values, ...nextValues]);
+      trace.push(`Baris ${lineNumber}: insertMany ${nextValues.join(", ")}`);
+      return;
+    }
+
+    if (deleteMatch) {
+      const value = parseCodeValue(lastCodeArgument(deleteMatch[2]));
+      if (value === null) {
+        errors.push(`Baris ${lineNumber}: nilai delete tidak valid.`);
+        return;
+      }
+      values = values.filter((item) => item !== value);
+      trace.push(`Baris ${lineNumber}: delete ${value}, lalu rebuild warna RBT dari sequence tersisa`);
+      return;
+    }
+
+    if (clearMatch || nullRootMatch) {
+      values = [];
+      trace.push(`Baris ${lineNumber}: clear tree`);
+      return;
+    }
+
+    errors.push(`Baris ${lineNumber}: baris ini belum bisa divisualkan.`);
+  });
+
+  const { root, logs } = buildRbt(values);
+  return {
+    values,
+    root,
+    logs,
+    trace,
+    errors,
+    validation: validateRbt(root),
+  };
+}
+
 function buildWalkthrough(sequenceText) {
   let root = null;
   const steps = [];
@@ -411,7 +719,7 @@ function getLayout(root) {
   };
 }
 
-function RbtTreeCanvas({ root, highlight }) {
+function RbtTreeCanvas({ root, highlight, selected, onSelect = () => {} }) {
   const { nodes, edges, width, height } = useMemo(() => getLayout(root), [root]);
 
   if (!root) {
@@ -444,9 +752,9 @@ function RbtTreeCanvas({ root, highlight }) {
         })}
         {nodes.map((node) => {
           const isRed = node.color === "red";
-          const isHighlighted = highlight === node.value;
+          const isHighlighted = highlight === node.value || selected?.value === node.value;
           return (
-            <g key={node.value} className="tree-node-group">
+            <g key={node.value} className="tree-node-group" onClick={() => onSelect(node)}>
               <text x={node.x} y={node.y - 38} textAnchor="middle" className="rbt-bh-label">
                 BH {node.blackHeight}
               </text>
@@ -515,18 +823,54 @@ function simplifyLog(log) {
 
 export default function RedBlackTree() {
   const [sequenceInput, setSequenceInput] = useState("A L G O R I T H M");
+  const [singleInput, setSingleInput] = useState("");
+  const [deleteInput, setDeleteInput] = useState("");
+  const [selectedNode, setSelectedNode] = useState(null);
   const [walkthroughText, setWalkthroughText] = useState("ALGORITHM");
   const [walkStep, setWalkStep] = useState(0);
   const [caseIndex, setCaseIndex] = useState(0);
+  const [deleteStep, setDeleteStep] = useState(0);
   const [codeDetail, setCodeDetail] = useState("node");
+  const [codeInput, setCodeInput] = useState(DEFAULT_RBT_CODE);
 
   const values = useMemo(() => parseValues(sequenceInput), [sequenceInput]);
   const builderResult = useMemo(() => buildRbt(values), [values]);
+  const nodeCount = useMemo(() => countNodes(builderResult.root), [builderResult.root]);
+  const validation = useMemo(() => validateRbt(builderResult.root), [builderResult.root]);
   const walkthrough = useMemo(() => buildWalkthrough(walkthroughText.toUpperCase()), [walkthroughText]);
   const safeWalkStep = Math.min(Math.max(0, walkStep), Math.max(0, walkthrough.length - 1));
   const currentWalk = walkthrough[safeWalkStep] ?? null;
   const selectedCase = INSERT_CASES[caseIndex];
+  const safeDeleteStep = Math.min(Math.max(0, deleteStep), RBT_DELETE_STEPS.length - 1);
+  const deleteStepData = RBT_DELETE_STEPS[safeDeleteStep];
   const detail = CODE_DETAILS[codeDetail];
+  const codeResult = useMemo(() => runRbtCode(codeInput), [codeInput]);
+
+  function setSequenceFromValues(nextValues) {
+    setSequenceInput(nextValues.join(" "));
+  }
+
+  function addSingleValue() {
+    const value = parseValue(singleInput);
+    if (value === null) return;
+    const exists = values.some((item) => compareValues(item, value) === 0);
+    setSequenceFromValues(exists ? values : [...values, value]);
+    setSingleInput("");
+  }
+
+  function deleteSingleValue() {
+    const value = parseValue(deleteInput);
+    if (value === null) return;
+    setSequenceFromValues(values.filter((item) => compareValues(item, value) !== 0));
+    if (selectedNode && compareValues(selectedNode.value, value) === 0) setSelectedNode(null);
+    setDeleteInput("");
+  }
+
+  function deleteSelectedNode() {
+    if (!selectedNode) return;
+    setSequenceFromValues(values.filter((item) => compareValues(item, selectedNode.value) !== 0));
+    setSelectedNode(null);
+  }
 
   return (
     <main className="app-shell rbt-shell">
@@ -596,10 +940,24 @@ export default function RedBlackTree() {
                 Clear
               </button>
             </div>
+            <label className="label">Tambah 1 nilai</label>
+            <div className="inline-input">
+              <input value={singleInput} onChange={(event) => setSingleInput(event.target.value)} placeholder="contoh: 42 / K" />
+              <button type="button" className="btn" onClick={addSingleValue}>
+                Insert
+              </button>
+            </div>
+            <label className="label">Hapus 1 nilai</label>
+            <div className="inline-input">
+              <input value={deleteInput} onChange={(event) => setDeleteInput(event.target.value)} placeholder="contoh: 20 / A" />
+              <button type="button" className="btn danger" onClick={deleteSingleValue}>
+                Hapus
+              </button>
+            </div>
             <div className="stats-grid">
               <div className="stat">
                 <span>Total Node</span>
-                <strong>{values.length}</strong>
+                <strong>{nodeCount}</strong>
               </div>
               <div className="stat">
                 <span>Root</span>
@@ -608,9 +966,28 @@ export default function RedBlackTree() {
             </div>
           </aside>
           <div className="canvas-panel rbt-canvas-panel">
-            <RbtTreeCanvas root={builderResult.root} highlight={values.at(-1)} />
+            <RbtTreeCanvas root={builderResult.root} highlight={values.at(-1)} selected={selectedNode} onSelect={setSelectedNode} />
           </div>
           <aside className="panel dark">
+            <h3>Node Inspector</h3>
+            {selectedNode ? (
+              <div className="inspector-list">
+                <p>
+                  Value: <strong>{selectedNode.value}</strong>
+                </p>
+                <p>
+                  Color: <strong>{findNode(builderResult.root, selectedNode.value)?.color ?? "-"}</strong>
+                </p>
+                <p>
+                  Black-height: <strong>{findNode(builderResult.root, selectedNode.value) ? getBlackHeight(findNode(builderResult.root, selectedNode.value)) : "-"}</strong>
+                </p>
+                <button type="button" className="btn danger" onClick={deleteSelectedNode}>
+                  Hapus Node Ini
+                </button>
+              </div>
+            ) : (
+              <p className="muted">Klik node pada canvas untuk melihat detail warna dan black-height.</p>
+            )}
             <h3>Ringkasan Tree</h3>
             <div className="rbt-summary-grid">
               <div className="stat">
@@ -626,10 +1003,17 @@ export default function RedBlackTree() {
                 <strong>{values.at(-1) ?? "-"}</strong>
               </div>
               <div className="stat">
-                <span>Aturan Utama</span>
-                <strong>No Double Red</strong>
+                <span>Status</span>
+                <strong>{validation.valid ? "Valid" : "Check"}</strong>
               </div>
             </div>
+            {validation.issues.length ? (
+              <ul className="log-list error-list">
+                {validation.issues.map((issue) => (
+                  <li key={issue}>{issue}</li>
+                ))}
+              </ul>
+            ) : null}
             <h3>Repair Terakhir</h3>
             {builderResult.logs.length ? (
               <ul className="log-list trace-list">
@@ -742,11 +1126,58 @@ export default function RedBlackTree() {
       <section className="card deletion-operation-card rbt-delete-card">
         <div className="section-head">
           <div>
-            <h2>Deletion dan Double Black</h2>
-            <p>Delete tetap dimulai seperti BST, lalu warna node yang hilang menentukan repair.</p>
+            <h2>Operation Deletion RBT</h2>
+            <p>Walkthrough deletion menampilkan successor, node merah yang aman dihapus, dan kasus double black.</p>
           </div>
+          <span className="step-badge rbt-step-badge">
+            Langkah {safeDeleteStep + 1} / {RBT_DELETE_STEPS.length}
+          </span>
         </div>
-        <div className="rbt-delete-grid">
+        <div className="deletion-operation-layout">
+          <div className="canvas-panel deletion-canvas-panel rbt-canvas-panel">
+            <RbtTreeCanvas root={deleteStepData.tree} highlight={deleteStepData.highlight} />
+          </div>
+          <aside className="panel deletion-step-panel">
+            <div className="rotation-canvas-header">
+              <span className="step-badge rbt-step-badge">{deleteStepData.short}</span>
+              <span className="rotation-step-counter">
+                {safeDeleteStep + 1} dari {RBT_DELETE_STEPS.length}
+              </span>
+            </div>
+            <h3 className="rotation-side-title">{deleteStepData.title}</h3>
+            <ul className="rotation-bullet-list">
+              {deleteStepData.bullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
+            </ul>
+            <pre className="source-code-block source-code-block-small deletion-code-snippet">
+              <code>{deleteStepData.code}</code>
+            </pre>
+            <label className="label">Pilih langkah deletion</label>
+            <input
+              type="range"
+              min={0}
+              max={RBT_DELETE_STEPS.length - 1}
+              value={safeDeleteStep}
+              onChange={(event) => setDeleteStep(Number(event.target.value))}
+              className="rotation-range"
+            />
+            <div className="step-nav">
+              <button type="button" className="btn" disabled={safeDeleteStep <= 0} onClick={() => setDeleteStep((step) => Math.max(0, step - 1))}>
+                Sebelumnya
+              </button>
+              <button
+                type="button"
+                className="btn primary"
+                disabled={safeDeleteStep >= RBT_DELETE_STEPS.length - 1}
+                onClick={() => setDeleteStep((step) => Math.min(RBT_DELETE_STEPS.length - 1, step + 1))}
+              >
+                Berikutnya
+              </button>
+            </div>
+          </aside>
+        </div>
+        <div className="rbt-delete-grid rbt-rule-strip">
           {DELETE_RULES.map((rule) => (
             <article key={rule.title} className="rbt-delete-rule">
               <h3>{rule.title}</h3>
@@ -787,6 +1218,105 @@ export default function RedBlackTree() {
                 <li key={bullet}>{bullet}</li>
               ))}
             </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section className="card code-card rbt-code-card">
+        <div className="section-head">
+          <div>
+            <h2>Full C Code Playground RBT</h2>
+            <p>Editor membaca operasi insert/delete pada main, lalu memvisualkan tree dengan aturan warna RBT.</p>
+          </div>
+          <div className="case-tabs case-tabs-wide">
+            <button type="button" className="active">
+              RBT Code
+            </button>
+            <button type="button" onClick={() => setCodeInput(DEFAULT_RBT_CODE)}>
+              Reset
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setCodeInput(`int main() {
+  struct Node *root = NULL;
+
+  insertMany([41, 38, 31, 12, 19, 8]);
+  root = deleteNode(root, 12);
+  root = insertNode(root, 25);
+
+  return 0;
+}`)
+              }
+            >
+              CLRS
+            </button>
+          </div>
+        </div>
+
+        <div className="code-layout">
+          <aside className="panel code-panel">
+            <div className="code-toolbar">
+              <span className="step-badge rbt-step-badge">RBT Source</span>
+              <span className="rotation-step-counter">{codeResult.values.length} node</span>
+            </div>
+            <textarea
+              className="code-editor"
+              spellCheck="false"
+              value={codeInput}
+              onChange={(event) => setCodeInput(event.target.value)}
+              aria-label="RBT C code editor"
+            />
+          </aside>
+
+          <div className="canvas-panel code-canvas-panel rbt-canvas-panel">
+            <RbtTreeCanvas root={codeResult.root} highlight={codeResult.values.at(-1)} />
+          </div>
+
+          <aside className="panel dark code-output-panel">
+            <h3>Output</h3>
+            <div className="stats-grid compact-stats">
+              <div className="stat">
+                <span>Black-height</span>
+                <strong>{codeResult.validation.blackHeight}</strong>
+              </div>
+              <div className="stat">
+                <span>Status</span>
+                <strong>{codeResult.validation.valid ? "Valid" : "Check"}</strong>
+              </div>
+            </div>
+            {codeResult.errors.length ? (
+              <>
+                <h3>Error</h3>
+                <ul className="log-list error-list">
+                  {codeResult.errors.map((error) => (
+                    <li key={error}>{error}</li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <p className="muted">Kode valid. Operasi sudah divisualkan sebagai Red-Black Tree.</p>
+            )}
+            <h3>Trace</h3>
+            {codeResult.trace.length ? (
+              <ul className="log-list trace-list">
+                {codeResult.trace.slice(-8).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="muted">Belum ada pemanggilan `insertNode` atau `deleteNode`.</p>
+            )}
+            <h3>Repair Log</h3>
+            {codeResult.logs.length ? (
+              <ul className="log-list trace-list">
+                {codeResult.logs.slice(-8).map((log, index) => (
+                  <li key={`${log}-${index}`}>{simplifyLog(log)}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="muted">Belum ada recolor atau rotation.</p>
+            )}
           </aside>
         </div>
       </section>
