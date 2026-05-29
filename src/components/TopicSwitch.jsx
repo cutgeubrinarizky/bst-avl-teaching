@@ -1,6 +1,7 @@
 export default function TopicSwitch({ topic, setTopic }) {
   return (
     <nav className="topic-switch" aria-label="Pilih materi tree">
+      <span className="topic-switch-label">Materi:</span>
       <button
         type="button"
         className={topic === "avl" ? "active" : ""}

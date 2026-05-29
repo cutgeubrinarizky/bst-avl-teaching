@@ -14,12 +14,28 @@
 }
 
 .topic-switch {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 18px 18px 0;
+  padding: 12px 18px;
   display: flex;
   gap: 8px;
+  align-items: center;
   justify-content: flex-end;
+  background: rgba(7, 11, 23, 0.92);
+  border-bottom: 1px solid #2f3557;
+  backdrop-filter: blur(8px);
+}
+
+.topic-switch-label {
+  margin-right: auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: #b6beff;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .topic-switch button {
