@@ -783,16 +783,6 @@ textarea {
   margin-top: 14px;
 }
 
-@media (max-width: 1120px) {
-  .insert-walkthrough-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .insert-visual-stack {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 .full-code-details {
   margin-top: 16px;
   border-top: 1px solid #2f3c5f;
@@ -1357,14 +1347,14 @@ textarea {
 
 .insert-walkthrough-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr) minmax(260px, 0.7fr);
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.48fr);
   gap: 16px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .insert-visual-stack {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
   min-width: 0;
 }
@@ -1377,12 +1367,14 @@ textarea {
 }
 
 .insert-mini-canvas .tree-scroll {
-  min-height: 190px;
+  min-height: 250px;
+  max-height: 250px;
   padding-top: 4px;
 }
 
 .insert-mini-canvas .tree-svg {
-  min-width: 560px;
+  min-width: 460px;
+  height: 250px;
 }
 
 .mini-canvas-label {
@@ -1400,6 +1392,25 @@ textarea {
   min-width: 0;
 }
 
+.insert-delete-panel {
+  grid-column: 1 / -1;
+}
+
+.insert-delete-panel .rotation-bullet-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.insert-delete-panel .rotation-bullet-list li {
+  margin: 0;
+  border: 1px solid #25395e;
+  background: #0d1728;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
 .insert-code-snippet {
   margin: 12px 0;
 }
@@ -1413,6 +1424,20 @@ textarea {
 
 .insert-step-list li + li {
   margin-top: 8px;
+}
+
+@media (max-width: 1120px) {
+  .insert-walkthrough-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .insert-visual-stack {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .insert-delete-panel .rotation-bullet-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .btree-shell .compare-item,
@@ -1841,6 +1866,10 @@ input[type="text"]:focus,
 
   .insert-mini-canvas .tree-svg {
     min-width: 520px;
+  }
+
+  .insert-delete-panel .rotation-bullet-list {
+    grid-template-columns: 1fr;
   }
 
   .compare-columns {

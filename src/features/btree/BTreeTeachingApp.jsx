@@ -449,7 +449,7 @@ function layoutBTree(root) {
   if (!root) return { nodes: [], edges: [], width: 720, height: 300 };
   const nodes = [];
   const edges = [];
-  let cursor = 70;
+  let cursor = 28;
   let nextId = 0;
   const gapY = 108;
 
@@ -458,7 +458,7 @@ function layoutBTree(root) {
     nextId += 1;
     const childXs = node.children.map((child) => walk(child, depth + 1, id));
     const width = Math.max(82, node.keys.length * 34 + 26);
-    const x = childXs.length ? (childXs[0] + childXs.at(-1)) / 2 : cursor;
+    const x = childXs.length ? (childXs[0] + childXs.at(-1)) / 2 : cursor + width / 2;
     if (!childXs.length) cursor += width + 42;
     nodes.push({ id, node, x, y: 62 + depth * gapY, width });
     if (parentId !== null) edges.push({ from: parentId, to: id });
