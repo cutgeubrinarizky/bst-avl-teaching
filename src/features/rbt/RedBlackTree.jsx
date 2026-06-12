@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import TreeCanvas from "../avl/TreeCanvas";
+import { buildTree as buildBinaryTree, getHeight as getBinaryHeight } from "../avl/avlLogic";
 
 const CORE_POINTS = [
   "Red-Black Tree adalah Binary Search Tree yang tiap node punya warna: merah atau hitam.",
@@ -14,6 +16,41 @@ const APPLICATIONS = [
   "Linux Completely Fair Scheduler memakai RBT untuk mengatur proses secara efisien.",
   "Virtual memory management dan operasi mmap/munmap di Linux memakai RBT untuk pemetaan memori.",
   "Database indexing dan routing table memerlukan operasi search/insert/delete dengan worst-case guarantee.",
+];
+
+const BST_COMPARISON = [
+  {
+    aspect: "Aturan dasar",
+    bst: "BST hanya menjaga left < parent < right.",
+    rbt: "RBT tetap BST, tetapi menambah warna node dan aturan black-height.",
+  },
+  {
+    aspect: "Keseimbangan",
+    bst: "Bisa miring total jika input terurut, tinggi menjadi n.",
+    rbt: "Tinggi dijaga O(log n) lewat recoloring dan rotation.",
+  },
+  {
+    aspect: "Insert",
+    bst: "Insert berhenti setelah node ditempatkan.",
+    rbt: "Insert dimulai seperti BST, node baru merah, lalu fix double red.",
+  },
+  {
+    aspect: "Delete",
+    bst: "Delete cukup memakai kasus leaf, satu child, atau dua child.",
+    rbt: "Delete memakai aturan BST, lalu memperbaiki warna jika muncul double black.",
+  },
+  {
+    aspect: "Kapan dipakai",
+    bst: "Cocok untuk konsep dasar dan data kecil yang urutannya tidak ekstrem.",
+    rbt: "Cocok untuk ordered set/map yang butuh worst-case stabil.",
+  },
+];
+
+const RBT_COMPLEXITIES = [
+  { op: "Search", bst: "O(h), bisa O(n)", rbt: "O(log n)" },
+  { op: "Insert", bst: "O(h), bisa O(n)", rbt: "O(log n)" },
+  { op: "Delete", bst: "O(h), bisa O(n)", rbt: "O(log n)" },
+  { op: "Traversal", bst: "O(n)", rbt: "O(n)" },
 ];
 
 const INSERT_CASES = [
@@ -826,6 +863,8 @@ export default function RedBlackTree() {
   const [singleInput, setSingleInput] = useState("");
   const [deleteInput, setDeleteInput] = useState("");
   const [selectedNode, setSelectedNode] = useState(null);
+  const [selectedBstNode, setSelectedBstNode] = useState(null);
+  const [builderMode, setBuilderMode] = useState("rbt");
   const [walkthroughText, setWalkthroughText] = useState("ALGORITHM");
   const [walkStep, setWalkStep] = useState(0);
   const [caseIndex, setCaseIndex] = useState(0);
@@ -835,6 +874,7 @@ export default function RedBlackTree() {
 
   const values = useMemo(() => parseValues(sequenceInput), [sequenceInput]);
   const builderResult = useMemo(() => buildRbt(values), [values]);
+  const bstResult = useMemo(() => buildBinaryTree(values, "bst"), [values]);
   const nodeCount = useMemo(() => countNodes(builderResult.root), [builderResult.root]);
   const validation = useMemo(() => validateRbt(builderResult.root), [builderResult.root]);
   const walkthrough = useMemo(() => buildWalkthrough(walkthroughText.toUpperCase()), [walkthroughText]);
@@ -900,6 +940,36 @@ export default function RedBlackTree() {
         </div>
       </section>
 
+      <section className="card rbt-card compare-card">
+        <div className="section-head">
+          <div>
+            <h2>Perbandingan dengan BST</h2>
+            <p>Red-Black Tree adalah BST yang diberi mekanisme balancing berbasis warna.</p>
+          </div>
+          <span className="step-badge rbt-step-badge">BST vs RBT</span>
+        </div>
+        <div className="compare-grid">
+          {BST_COMPARISON.map((item) => (
+            <article key={item.aspect} className="compare-item">
+              <h3>{item.aspect}</h3>
+              <div className="compare-columns">
+                <p><strong>BST</strong>{item.bst}</p>
+                <p><strong>RBT</strong>{item.rbt}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+        <div className="complexity-row">
+          {RBT_COMPLEXITIES.map((item) => (
+            <div key={item.op} className="complexity-chip">
+              <span>{item.op}</span>
+              <strong>{item.rbt}</strong>
+              <small>BST: {item.bst}</small>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="card rbt-properties-card">
         <div className="section-head">
           <div>
@@ -921,7 +991,15 @@ export default function RedBlackTree() {
         <div className="section-head">
           <div>
             <h2>Interactive RBT Builder</h2>
-            <p>Masukkan huruf atau angka. Insert diproses seperti BST, node baru merah, lalu fix violation.</p>
+            <p>Pakai input yang sama untuk melihat bentuk BST biasa dibandingkan dengan Red-Black Tree.</p>
+          </div>
+          <div className="mode-switch">
+            <button type="button" className={builderMode === "bst" ? "active" : ""} onClick={() => setBuilderMode("bst")}>
+              BST
+            </button>
+            <button type="button" className={builderMode === "rbt" ? "active" : ""} onClick={() => setBuilderMode("rbt")}>
+              RBT
+            </button>
           </div>
         </div>
         <div className="builder-grid rbt-builder-grid">
@@ -960,17 +1038,36 @@ export default function RedBlackTree() {
                 <strong>{nodeCount}</strong>
               </div>
               <div className="stat">
-                <span>Root</span>
-                <strong>{builderResult.root?.value ?? "-"}</strong>
+                <span>{builderMode === "bst" ? "Tinggi BST" : "Root"}</span>
+                <strong>{builderMode === "bst" ? getBinaryHeight(bstResult.root) : builderResult.root?.value ?? "-"}</strong>
               </div>
             </div>
           </aside>
-          <div className="canvas-panel rbt-canvas-panel">
-            <RbtTreeCanvas root={builderResult.root} highlight={values.at(-1)} selected={selectedNode} onSelect={setSelectedNode} />
+          <div className={`canvas-panel ${builderMode === "rbt" ? "rbt-canvas-panel" : ""}`}>
+            {builderMode === "bst" ? (
+              <TreeCanvas root={bstResult.root} selected={selectedBstNode} onSelect={setSelectedBstNode} mode="bst" />
+            ) : (
+              <RbtTreeCanvas root={builderResult.root} highlight={values.at(-1)} selected={selectedNode} onSelect={setSelectedNode} />
+            )}
           </div>
           <aside className="panel dark">
             <h3>Node Inspector</h3>
-            {selectedNode ? (
+            {builderMode === "bst" && selectedBstNode ? (
+              <div className="inspector-list">
+                <p>
+                  Value: <strong>{selectedBstNode.value}</strong>
+                </p>
+                <p>
+                  Height: <strong>{selectedBstNode.height}</strong>
+                </p>
+                <p>
+                  BF: <strong>{selectedBstNode.bf}</strong>
+                </p>
+                <p>
+                  Status: <strong>BST mode, tidak ada recolor/rotation otomatis.</strong>
+                </p>
+              </div>
+            ) : builderMode === "rbt" && selectedNode ? (
               <div className="inspector-list">
                 <p>
                   Value: <strong>{selectedNode.value}</strong>
@@ -986,17 +1083,17 @@ export default function RedBlackTree() {
                 </button>
               </div>
             ) : (
-              <p className="muted">Klik node pada canvas untuk melihat detail warna dan black-height.</p>
+              <p className="muted">Klik node pada canvas untuk melihat detail {builderMode === "bst" ? "BST" : "warna dan black-height"}.</p>
             )}
             <h3>Ringkasan Tree</h3>
             <div className="rbt-summary-grid">
               <div className="stat">
                 <span>Root</span>
-                <strong>{builderResult.root?.value ?? "-"}</strong>
+                <strong>{builderMode === "bst" ? bstResult.root?.value ?? "-" : builderResult.root?.value ?? "-"}</strong>
               </div>
               <div className="stat">
-                <span>Warna Root</span>
-                <strong>{builderResult.root ? "Black" : "-"}</strong>
+                <span>{builderMode === "bst" ? "Tinggi" : "Warna Root"}</span>
+                <strong>{builderMode === "bst" ? getBinaryHeight(bstResult.root) : builderResult.root ? "Black" : "-"}</strong>
               </div>
               <div className="stat">
                 <span>Node Terakhir</span>
@@ -1017,14 +1114,18 @@ export default function RedBlackTree() {
             <h3>Repair Terakhir</h3>
             {builderResult.logs.length ? (
               <ul className="log-list trace-list">
-                {builderResult.logs.slice(-6).map((log, index) => (
-                  <li key={`${log}-${index}`}>{simplifyLog(log)}</li>
-                ))}
+                {builderMode === "bst" ? (
+                  <li>BST memasukkan node sesuai perbandingan key saja, tanpa balancing.</li>
+                ) : (
+                  builderResult.logs.slice(-6).map((log, index) => (
+                    <li key={`${log}-${index}`}>{simplifyLog(log)}</li>
+                  ))
+                )}
               </ul>
             ) : (
               <p className="muted">Belum ada insert yang diproses.</p>
             )}
-            <ColorLegend />
+            {builderMode === "rbt" ? <ColorLegend /> : null}
           </aside>
         </div>
       </section>

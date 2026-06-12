@@ -16,6 +16,20 @@ export default function TopicSwitch({ topic, setTopic }) {
       >
         Red-Black Tree
       </button>
+      <button
+        type="button"
+        className={topic === "btree" ? "active" : ""}
+        onClick={() => setTopic("btree")}
+      >
+        B-Tree
+      </button>
+      <button
+        type="button"
+        className={topic === "heap" ? "active" : ""}
+        onClick={() => setTopic("heap")}
+      >
+        Heap
+      </button>
     </nav>
   );
 }
