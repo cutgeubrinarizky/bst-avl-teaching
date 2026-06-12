@@ -783,6 +783,16 @@ textarea {
   margin-top: 14px;
 }
 
+@media (max-width: 1120px) {
+  .insert-walkthrough-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .insert-visual-stack {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .full-code-details {
   margin-top: 16px;
   border-top: 1px solid #2f3c5f;
@@ -1345,6 +1355,66 @@ textarea {
   white-space: pre-wrap;
 }
 
+.insert-walkthrough-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr) minmax(260px, 0.7fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.insert-visual-stack {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  min-width: 0;
+}
+
+.insert-mini-canvas {
+  border: 1px solid #223b5e;
+  background: #0f1b2d;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.insert-mini-canvas .tree-scroll {
+  min-height: 190px;
+  padding-top: 4px;
+}
+
+.insert-mini-canvas .tree-svg {
+  min-width: 560px;
+}
+
+.mini-canvas-label {
+  border-bottom: 1px solid #223b5e;
+  padding: 9px 12px;
+  color: #a7f3d0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.insert-step-panel,
+.insert-delete-panel {
+  min-width: 0;
+}
+
+.insert-code-snippet {
+  margin: 12px 0;
+}
+
+.insert-step-list {
+  margin: 14px 0 0;
+  padding-left: 22px;
+  color: #d8e1ff;
+  line-height: 1.55;
+}
+
+.insert-step-list li + li {
+  margin-top: 8px;
+}
+
 .btree-shell .compare-item,
 .btree-shell .complexity-chip {
   border-color: #315f51;
@@ -1763,6 +1833,14 @@ input[type="text"]:focus,
   .stats-grid,
   .rbt-summary-grid {
     grid-template-columns: 1fr;
+  }
+
+  .insert-visual-stack {
+    grid-template-columns: 1fr;
+  }
+
+  .insert-mini-canvas .tree-svg {
+    min-width: 520px;
   }
 
   .compare-columns {

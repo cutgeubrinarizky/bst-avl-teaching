@@ -26,38 +26,93 @@ const COMPLEXITIES = [
 const INSERT_STEPS = [
   {
     short: "Cari Leaf",
-    title: "Turun ke child yang benar",
+    title: "Step 1: cari leaf tujuan untuk insert 17",
+    beforeLabel: "Tree sebelum insert",
+    beforeTree: nodeFromSpec({
+      keys: [10],
+      children: [{ keys: [5, 6, 7] }, { keys: [12, 20, 30] }],
+    }),
+    afterLabel: "Path yang dipilih",
+    afterTree: nodeFromSpec({
+      keys: [10],
+      children: [{ keys: [5, 6, 7] }, { keys: [12, 20, 30] }],
+    }),
+    highlight: 10,
+    code: `insert(17)
+17 > 10
+turun ke child kanan [12, 20, 30]`,
     bullets: [
-      "Bandingkan key baru dengan key-key di node saat ini.",
-      "Pilih child di antara dua key yang membatasi range-nya.",
-      "Proses berulang sampai menemukan leaf.",
+      "Mulai dari root [10].",
+      "Karena 17 lebih besar dari 10, arah insert ke child kanan.",
+      "Child kanan adalah leaf [12, 20, 30], jadi proses turun berhenti di sana.",
     ],
   },
   {
     short: "Insert",
-    title: "Masukkan key secara terurut",
+    title: "Step 2: sisipkan key di leaf secara sorted",
+    beforeLabel: "Leaf tujuan sebelum insert",
+    beforeTree: nodeFromSpec({
+      keys: [10],
+      children: [{ keys: [5, 6, 7] }, { keys: [12, 20, 30] }],
+    }),
+    afterLabel: "Leaf setelah insert",
+    afterTree: nodeFromSpec({
+      keys: [10],
+      children: [{ keys: [5, 6, 7] }, { keys: [12, 17, 20, 30] }],
+    }),
+    highlight: 17,
+    code: `leaf = [12, 20, 30]
+insert 17 di antara 12 dan 20
+leaf = [12, 17, 20, 30]`,
     bullets: [
-      "Key baru ditempatkan di leaf dengan urutan ascending.",
-      "Selama jumlah key belum melewati batas, struktur parent tidak berubah.",
-      "Pada t = 3, satu node maksimal menyimpan 5 key.",
+      "Key tidak ditaruh asal di ujung, tapi disisipkan sesuai urutan.",
+      "Leaf berubah dari [12, 20, 30] menjadi [12, 17, 20, 30].",
+      "Untuk t = 3 batasnya 5 key, jadi belum perlu split.",
     ],
   },
   {
     short: "Split",
-    title: "Jika node penuh, pecah node",
+    title: "Step 3: kalau child tujuan penuh, split dulu",
+    beforeLabel: "Child penuh sebelum turun",
+    beforeTree: nodeFromSpec({
+      keys: [10],
+      children: [{ keys: [1, 3, 5, 6, 7] }, { keys: [12, 20] }],
+    }),
+    afterLabel: "Child setelah split",
+    afterTree: nodeFromSpec({
+      keys: [5, 10],
+      children: [{ keys: [1, 3] }, { keys: [6, 7] }, { keys: [12, 20] }],
+    }),
+    highlight: 5,
+    code: `target child = [1, 3, 5, 6, 7]
+median = 5
+parent [10] -> [5, 10]
+child -> [1, 3] dan [6, 7]`,
     bullets: [
-      "Median dipindahkan naik ke parent.",
-      "Key kiri median menjadi node kiri.",
-      "Key kanan median menjadi node kanan.",
+      "Sebelum insert 4, child kiri sudah penuh karena punya 5 key.",
+      "Median 5 dinaikkan ke parent.",
+      "Key kiri median menjadi node [1, 3], key kanan median menjadi node [6, 7].",
     ],
   },
   {
     short: "Root Split",
-    title: "Jika root penuh, tinggi tree naik",
+    title: "Step 4: root split membuat tinggi tree naik",
+    beforeLabel: "Root penuh",
+    beforeTree: nodeFromSpec({ keys: [5, 6, 10, 12, 20] }),
+    afterLabel: "Root baru setelah split",
+    afterTree: nodeFromSpec({
+      keys: [10],
+      children: [{ keys: [5, 6] }, { keys: [12, 20, 30] }],
+    }),
+    highlight: 10,
+    code: `root = [5, 6, 10, 12, 20]
+median = 10
+new root = [10]
+insert 30 ke child kanan [12, 20, 30]`,
     bullets: [
-      "Root lama dipecah menjadi dua child.",
-      "Median menjadi root baru.",
-      "Ini satu-satunya momen tinggi B-Tree bertambah.",
+      "Kalau root penuh, buat root baru kosong di atas root lama.",
+      "Median 10 naik menjadi root baru.",
+      "Setelah itu insert 30 dilanjutkan ke child kanan, dan tinggi tree bertambah satu level.",
     ],
   },
 ];
@@ -730,7 +785,7 @@ export default function BTreeTeachingApp() {
         <div className="section-head">
           <div>
             <h2>Insert Walkthrough</h2>
-            <p>Empat fase utama saat key baru masuk ke B-Tree.</p>
+            <p>Contoh konkret urutan insert: cari leaf, sisipkan key, split child penuh, lalu root split.</p>
           </div>
           <div className="case-tabs case-tabs-wide">
             {INSERT_STEPS.map((item, index) => (
@@ -738,13 +793,43 @@ export default function BTreeTeachingApp() {
             ))}
           </div>
         </div>
-        <div className="rbt-case-layout">
-          <div className="panel">
+        <div className="insert-walkthrough-grid">
+          <div className="insert-visual-stack">
+            <div className="insert-mini-canvas">
+              <div className="mini-canvas-label">{step.beforeLabel}</div>
+              <BTreeCanvas root={step.beforeTree} selected={null} onSelect={() => {}} highlight={step.highlight} />
+            </div>
+            <div className="insert-mini-canvas">
+              <div className="mini-canvas-label">{step.afterLabel}</div>
+              <BTreeCanvas root={step.afterTree} selected={null} onSelect={() => {}} highlight={step.highlight} />
+            </div>
+          </div>
+
+          <div className="panel insert-step-panel">
             <span className="step-badge btree-badge">{step.short}</span>
             <h3>{step.title}</h3>
-            <ul className="rotation-bullet-list">{step.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>
+            <pre className="source-code-block source-code-block-small btree-code-snippet insert-code-snippet">
+              <code>{step.code}</code>
+            </pre>
+            <ol className="insert-step-list">
+              {step.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}
+            </ol>
+            <div className="step-nav">
+              <button type="button" className="btn" disabled={stepIndex <= 0} onClick={() => setStepIndex((index) => Math.max(0, index - 1))}>
+                Sebelumnya
+              </button>
+              <button
+                type="button"
+                className="btn primary"
+                disabled={stepIndex >= INSERT_STEPS.length - 1}
+                onClick={() => setStepIndex((index) => Math.min(INSERT_STEPS.length - 1, index + 1))}
+              >
+                Berikutnya
+              </button>
+            </div>
           </div>
-          <aside className="panel dark">
+
+          <aside className="panel dark insert-delete-panel">
             <h3>Deletion Rules</h3>
             <ul className="rotation-bullet-list">{DELETE_RULES.map((rule) => <li key={rule}>{rule}</li>)}</ul>
           </aside>
