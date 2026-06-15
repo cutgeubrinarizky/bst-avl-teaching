@@ -289,6 +289,218 @@ insert selesai`,
       },
     ],
   },
+  leafDelete: {
+    label: "Delete Leaf",
+    title: "Delete 17 dari leaf yang masih aman",
+    degree: 3,
+    steps: [
+      {
+        short: "Awal",
+        title: "Tree valid sebelum delete",
+        tree: nodeFromSpec({
+          keys: [10],
+          children: [{ keys: [5, 6, 7] }, { keys: [12, 17, 20, 30] }],
+        }),
+        highlight: 17,
+        code: `t = 3
+minKey non-root = t - 1 = 2
+delete 17`,
+        bullets: [
+          "Mulai dari root [10].",
+          "Key 17 lebih besar dari 10, jadi pencarian turun ke child kanan.",
+          "Child kanan adalah leaf [12, 17, 20, 30].",
+        ],
+      },
+      {
+        short: "Hapus",
+        title: "17 dihapus langsung dari leaf",
+        tree: nodeFromSpec({
+          keys: [10],
+          children: [{ keys: [5, 6, 7] }, { keys: [12, 20, 30] }],
+        }),
+        highlight: 17,
+        code: `leaf = [12, 17, 20, 30]
+hapus 17
+leaf = [12, 20, 30]`,
+        bullets: [
+          "Karena 17 ada di leaf, tidak perlu cari predecessor atau successor.",
+          "Setelah dihapus, leaf masih punya 3 key.",
+          "Jumlah 3 key masih di atas minimum 2 key.",
+        ],
+      },
+      {
+        short: "Valid",
+        title: "Tree tetap valid",
+        tree: nodeFromSpec({
+          keys: [10],
+          children: [{ keys: [5, 6, 7] }, { keys: [12, 20, 30] }],
+        }),
+        highlight: 20,
+        code: `leaf key count = 3
+3 >= t - 1
+selesai`,
+        bullets: [
+          "Tidak ada node yang kekurangan key.",
+          "Root tetap [10] dan semua leaf tetap pada level yang sama.",
+          "Ini kasus delete paling sederhana.",
+        ],
+      },
+    ],
+  },
+  borrowDelete: {
+    label: "Delete Borrow",
+    title: "Delete 12 dengan borrow dari sibling kiri",
+    degree: 3,
+    steps: [
+      {
+        short: "Awal",
+        title: "Target child punya key minimum",
+        tree: nodeFromSpec({
+          keys: [10, 20],
+          children: [{ keys: [1, 5, 6] }, { keys: [12, 15] }, { keys: [25, 30] }],
+        }),
+        highlight: 12,
+        code: `t = 3
+target child = [12, 15]
+delete 12`,
+        bullets: [
+          "Target 12 ada di child tengah.",
+          "Child tengah hanya punya 2 key, sama dengan minimum t - 1.",
+          "Sebelum turun, algoritma membuat child punya minimal t key.",
+        ],
+      },
+      {
+        short: "Borrow",
+        title: "Sibling kiri meminjamkan satu key",
+        tree: nodeFromSpec({
+          keys: [6, 20],
+          children: [{ keys: [1, 5] }, { keys: [10, 12, 15] }, { keys: [25, 30] }],
+        }),
+        highlight: 10,
+        code: `left sibling = [1, 5, 6]
+parent separator = 10
+
+6 naik ke parent
+10 turun ke target child`,
+        bullets: [
+          "Sibling kiri punya 3 key, jadi boleh meminjamkan satu key.",
+          "Key terbesar sibling kiri, yaitu 6, naik menggantikan separator parent 10.",
+          "Separator lama 10 turun ke target child agar urutan range tetap benar.",
+        ],
+      },
+      {
+        short: "Hapus",
+        title: "12 dihapus setelah child aman",
+        tree: nodeFromSpec({
+          keys: [6, 20],
+          children: [{ keys: [1, 5] }, { keys: [10, 15] }, { keys: [25, 30] }],
+        }),
+        highlight: 12,
+        code: `target child = [10, 12, 15]
+hapus 12
+target child = [10, 15]`,
+        bullets: [
+          "Setelah borrow, target child punya 3 key.",
+          "Sekarang 12 bisa dihapus dari leaf.",
+          "Hasil akhirnya target child kembali punya 2 key, masih valid.",
+        ],
+      },
+      {
+        short: "Valid",
+        title: "Tree valid setelah borrow delete",
+        tree: nodeFromSpec({
+          keys: [6, 20],
+          children: [{ keys: [1, 5] }, { keys: [10, 15] }, { keys: [25, 30] }],
+        }),
+        highlight: 6,
+        code: `root = [6, 20]
+semua child punya >= 2 key
+selesai`,
+        bullets: [
+          "Semua child non-root punya minimal 2 key.",
+          "Range child tetap benar: kiri < 6, tengah di antara 6 dan 20, kanan > 20.",
+          "Borrow menghindari merge dan menjaga tinggi tree tetap sama.",
+        ],
+      },
+    ],
+  },
+  mergeDelete: {
+    label: "Delete Merge",
+    title: "Delete 12 dengan merge child dan sibling",
+    degree: 3,
+    steps: [
+      {
+        short: "Awal",
+        title: "Target dan sibling sama-sama minimum",
+        tree: nodeFromSpec({
+          keys: [10, 20],
+          children: [{ keys: [1, 5] }, { keys: [12, 15] }, { keys: [25, 30] }],
+        }),
+        highlight: 12,
+        code: `t = 3
+target child = [12, 15]
+left sibling = [1, 5]
+delete 12`,
+        bullets: [
+          "Target child punya 2 key, sama dengan minimum.",
+          "Sibling kiri juga hanya punya 2 key, jadi tidak bisa meminjamkan.",
+          "Saat borrow tidak mungkin, algoritma melakukan merge.",
+        ],
+      },
+      {
+        short: "Merge",
+        title: "Parent separator turun dan dua child digabung",
+        tree: nodeFromSpec({
+          keys: [20],
+          children: [{ keys: [1, 5, 10, 12, 15] }, { keys: [25, 30] }],
+        }),
+        highlight: 10,
+        code: `separator parent = 10
+merge [1, 5] + 10 + [12, 15]
+= [1, 5, 10, 12, 15]`,
+        bullets: [
+          "Key separator 10 turun dari parent.",
+          "Sibling kiri, separator, dan target child digabung menjadi satu node.",
+          "Parent kehilangan satu key dan jumlah child berkurang satu.",
+        ],
+      },
+      {
+        short: "Hapus",
+        title: "12 dihapus dari node hasil merge",
+        tree: nodeFromSpec({
+          keys: [20],
+          children: [{ keys: [1, 5, 10, 15] }, { keys: [25, 30] }],
+        }),
+        highlight: 12,
+        code: `merged node = [1, 5, 10, 12, 15]
+hapus 12
+merged node = [1, 5, 10, 15]`,
+        bullets: [
+          "Setelah merge, node hasil gabungan punya cukup key untuk proses delete.",
+          "12 dihapus langsung karena berada di leaf.",
+          "Node hasil akhir punya 4 key, masih dalam batas maksimal 5 key.",
+        ],
+      },
+      {
+        short: "Valid",
+        title: "Tree valid setelah merge delete",
+        tree: nodeFromSpec({
+          keys: [20],
+          children: [{ keys: [1, 5, 10, 15] }, { keys: [25, 30] }],
+        }),
+        highlight: 20,
+        code: `root = [20]
+left child = [1, 5, 10, 15]
+right child = [25, 30]
+selesai`,
+        bullets: [
+          "Root boleh punya lebih sedikit key daripada node biasa.",
+          "Semua child non-root tetap punya minimal 2 key.",
+          "Merge bisa membuat parent menyusut; jika root kosong, tinggi tree bisa turun.",
+        ],
+      },
+    ],
+  },
 };
 
 const DEFAULT_CODE = `int main() {
@@ -545,8 +757,8 @@ export default function BTreeTeachingApp() {
   const [deleteInput, setDeleteInput] = useState("");
   const [selectedNode, setSelectedNode] = useState(null);
   const [stepIndex, setStepIndex] = useState(0);
-  const [splitExampleKey, setSplitExampleKey] = useState("rootSplit");
-  const [splitStep, setSplitStep] = useState(0);
+  const [processExampleKey, setProcessExampleKey] = useState("rootSplit");
+  const [processStep, setProcessStep] = useState(0);
   const [codeInput, setCodeInput] = useState(DEFAULT_CODE);
 
   const values = useMemo(() => unique(parseValues(sequenceInput)), [sequenceInput]);
@@ -554,9 +766,9 @@ export default function BTreeTeachingApp() {
   const validation = useMemo(() => validateBTree(result.root, degree), [result.root, degree]);
   const codeResult = useMemo(() => runBTreeCode(codeInput), [codeInput]);
   const step = INSERT_STEPS[stepIndex];
-  const splitExample = SPLIT_EXAMPLES[splitExampleKey];
-  const safeSplitStep = Math.min(Math.max(0, splitStep), splitExample.steps.length - 1);
-  const splitStepData = splitExample.steps[safeSplitStep];
+  const processExample = SPLIT_EXAMPLES[processExampleKey];
+  const safeProcessStep = Math.min(Math.max(0, processStep), processExample.steps.length - 1);
+  const processStepData = processExample.steps[safeProcessStep];
 
   function setValues(nextValues) {
     setSequenceInput(unique(nextValues).join(" "));
@@ -605,18 +817,18 @@ export default function BTreeTeachingApp() {
       <section className="card btree-card">
         <div className="section-head">
           <div>
-            <h2>Split Process Lab</h2>
-            <p>Contoh lengkap saat node penuh: median naik, node pecah, lalu insert dilanjutkan ke child yang benar.</p>
+            <h2>B-Tree Process Lab</h2>
+            <p>Contoh lengkap insert split dan delete: hapus leaf, borrow dari sibling, sampai merge node.</p>
           </div>
           <div className="case-tabs case-tabs-wide">
             {Object.entries(SPLIT_EXAMPLES).map(([key, item]) => (
               <button
                 key={key}
                 type="button"
-                className={splitExampleKey === key ? "active" : ""}
+                className={processExampleKey === key ? "active" : ""}
                 onClick={() => {
-                  setSplitExampleKey(key);
-                  setSplitStep(0);
+                  setProcessExampleKey(key);
+                  setProcessStep(0);
                 }}
               >
                 {item.label}
@@ -627,62 +839,62 @@ export default function BTreeTeachingApp() {
 
         <div className="ppt-meta btree-process-meta">
           <div>
-            <strong>{splitExample.title}</strong>
-            <p className="muted small-margin">Minimum degree t = {splitExample.degree}, maksimal key per node = {2 * splitExample.degree - 1}</p>
+            <strong>{processExample.title}</strong>
+            <p className="muted small-margin">Minimum degree t = {processExample.degree}, maksimal key per node = {2 * processExample.degree - 1}</p>
           </div>
-          <span className="step-badge btree-badge">{splitStepData.short}</span>
+          <span className="step-badge btree-badge">{processStepData.short}</span>
         </div>
 
         <div className="deletion-operation-layout">
           <div className="canvas-panel btree-canvas-panel btree-process-canvas">
-            <BTreeCanvas root={splitStepData.tree} selected={null} onSelect={() => {}} highlight={splitStepData.highlight} />
+            <BTreeCanvas root={processStepData.tree} selected={null} onSelect={() => {}} highlight={processStepData.highlight} />
           </div>
 
           <aside className="panel deletion-step-panel">
             <div className="rotation-canvas-header">
               <span className="rotation-step-counter">
-                Langkah {safeSplitStep + 1} / {splitExample.steps.length}
+                Langkah {safeProcessStep + 1} / {processExample.steps.length}
               </span>
             </div>
-            <h3 className="rotation-side-title">{splitStepData.title}</h3>
+            <h3 className="rotation-side-title">{processStepData.title}</h3>
             <ul className="rotation-bullet-list">
-              {splitStepData.bullets.map((bullet) => (
+              {processStepData.bullets.map((bullet) => (
                 <li key={bullet}>{bullet}</li>
               ))}
             </ul>
             <pre className="source-code-block source-code-block-small deletion-code-snippet btree-code-snippet">
-              <code>{splitStepData.code}</code>
+              <code>{processStepData.code}</code>
             </pre>
-            <label className="label">Pilih langkah split</label>
+            <label className="label">Pilih langkah proses</label>
             <input
               type="range"
               min={0}
-              max={splitExample.steps.length - 1}
-              value={safeSplitStep}
-              onChange={(event) => setSplitStep(Number(event.target.value))}
+              max={processExample.steps.length - 1}
+              value={safeProcessStep}
+              onChange={(event) => setProcessStep(Number(event.target.value))}
               className="rotation-range"
             />
             <div className="step-nav">
-              <button type="button" className="btn" disabled={safeSplitStep <= 0} onClick={() => setSplitStep((step) => Math.max(0, step - 1))}>
+              <button type="button" className="btn" disabled={safeProcessStep <= 0} onClick={() => setProcessStep((step) => Math.max(0, step - 1))}>
                 Sebelumnya
               </button>
               <button
                 type="button"
                 className="btn primary"
-                disabled={safeSplitStep >= splitExample.steps.length - 1}
-                onClick={() => setSplitStep((step) => Math.min(splitExample.steps.length - 1, step + 1))}
+                disabled={safeProcessStep >= processExample.steps.length - 1}
+                onClick={() => setProcessStep((step) => Math.min(processExample.steps.length - 1, step + 1))}
               >
                 Berikutnya
               </button>
             </div>
             <div className="step-timeline">
-              {splitExample.steps.map((item, index) => (
+              {processExample.steps.map((item, index) => (
                 <button
                   key={item.short}
                   type="button"
-                  className={`timeline-dot ${index === safeSplitStep ? "active" : ""}`}
+                  className={`timeline-dot ${index === safeProcessStep ? "active" : ""}`}
                   title={item.title}
-                  onClick={() => setSplitStep(index)}
+                  onClick={() => setProcessStep(index)}
                 >
                   {index + 1}
                 </button>
@@ -736,6 +948,17 @@ export default function BTreeTeachingApp() {
             <div className="rbt-presets">
               <button type="button" className="btn" onClick={() => setSequenceInput("10 20 5 6 12 30 7 17")}>Contoh 1</button>
               <button type="button" className="btn" onClick={() => setSequenceInput("1 3 7 10 11 13 14 15 18 16 19 24 25 26 21")}>Contoh Split</button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  setDegree(3);
+                  setSequenceInput("10 20 1 5 12 15 25 30");
+                  setDeleteInput("12");
+                }}
+              >
+                Contoh Delete
+              </button>
               <button type="button" className="btn ghost" onClick={() => setValues([])}>Clear</button>
             </div>
             <label className="label">Tambah 1 angka</label>
