@@ -70,71 +70,71 @@ const APPLICATIONS = [
 ];
 
 const PROCESS_EXAMPLES = {
-  insertUp: {
-    label: "Insert 80",
-    title: "Insert 80 pada Max-Heap",
+  maxInsert: {
+    label: "Max Insert 45",
+    title: "Insert 45 pada Max-Heap",
     mode: "max",
     steps: [
       {
         short: "Awal",
         title: "Heap valid sebelum insert",
-        heap: [64, 30, 55, 7, 18, 42],
+        heap: [50, 30, 40, 10, 20, 35],
         highlightIndex: null,
-        code: `heap = [64, 30, 55, 7, 18, 42]
-insert 80`,
+        code: `heap = [50, 30, 40, 10, 20, 35]
+insert 45`,
         bullets: [
-          "Root 64 adalah nilai terbesar saat ini.",
+          "Root 50 adalah nilai terbesar saat ini.",
           "Bentuk tree complete karena array terisi dari index 0 sampai 5.",
           "Nilai baru selalu dimasukkan ke index terakhir terlebih dulu.",
         ],
       },
       {
         short: "Append",
-        title: "80 masuk ke index terakhir",
-        heap: [64, 30, 55, 7, 18, 42, 80],
+        title: "45 masuk ke index terakhir",
+        heap: [50, 30, 40, 10, 20, 35, 45],
         highlightIndex: 6,
-        code: `heap[6] = 80
+        code: `heap[6] = 45
 parentIndex = floor((6 - 1) / 2) = 2
-parent = 55`,
+parent = 40`,
         bullets: [
-          "Complete tree tetap aman karena 80 ditempatkan di slot kosong berikutnya.",
-          "Parent 80 adalah index 2, nilainya 55.",
-          "Untuk Max-Heap, 80 tidak boleh berada di bawah 55.",
+          "Complete tree tetap aman karena 45 ditempatkan di slot kosong berikutnya.",
+          "Parent 45 adalah index 2, nilainya 40.",
+          "Untuk Max-Heap, 45 tidak boleh berada di bawah 40.",
         ],
       },
       {
-        short: "Swap 1",
-        title: "80 naik melewati parent 55",
-        heap: [64, 30, 80, 7, 18, 42, 55],
+        short: "Swap",
+        title: "45 naik melewati parent 40",
+        heap: [50, 30, 45, 10, 20, 35, 40],
         highlightIndex: 2,
-        code: `80 > 55
+        code: `45 > 40
 swap index 6 dan 2`,
         bullets: [
-          "Karena 80 lebih besar dari parent, keduanya ditukar.",
-          "80 sekarang berada di index 2.",
+          "Karena 45 lebih besar dari parent, keduanya ditukar.",
+          "45 sekarang berada di index 2.",
           "Masih perlu cek parent barunya.",
         ],
       },
       {
-        short: "Swap 2",
-        title: "80 naik menjadi root",
-        heap: [80, 30, 64, 7, 18, 42, 55],
-        highlightIndex: 0,
+        short: "Cek",
+        title: "45 berhenti di bawah root",
+        heap: [50, 30, 45, 10, 20, 35, 40],
+        highlightIndex: 2,
         code: `parentIndex = floor((2 - 1) / 2) = 0
-80 > 64
-swap index 2 dan 0`,
+parent = 50
+45 < 50`,
         bullets: [
-          "Parent baru 80 adalah root 64.",
-          "80 masih lebih besar, jadi swap lagi.",
-          "80 menjadi root Max-Heap.",
+          "Parent baru 45 adalah root 50.",
+          "Karena 45 lebih kecil dari 50, heapify-up berhenti.",
+          "Tidak semua insert harus naik sampai root.",
         ],
       },
       {
         short: "Valid",
         title: "Heap property kembali valid",
-        heap: [80, 30, 64, 7, 18, 42, 55],
+        heap: [50, 30, 45, 10, 20, 35, 40],
         highlightIndex: 0,
-        code: `root = 80
+        code: `root = 50
 semua parent >= child`,
         bullets: [
           "Root adalah nilai terbesar.",
@@ -144,33 +144,33 @@ semua parent >= child`,
       },
     ],
   },
-  extractDown: {
-    label: "Extract Root",
+  maxDelete: {
+    label: "Max Delete",
     title: "Extract root dari Max-Heap",
     mode: "max",
     steps: [
       {
         short: "Awal",
         title: "Root siap diambil",
-        heap: [80, 30, 64, 7, 18, 42, 55],
+        heap: [50, 30, 45, 10, 20, 35, 40],
         highlightIndex: 0,
-        code: `removed = heap[0] = 80`,
+        code: `removed = heap[0] = 50`,
         bullets: [
           "Pada Max-Heap, root adalah prioritas terbesar.",
-          "Nilai 80 akan dikeluarkan dari heap.",
+          "Nilai 50 akan dikeluarkan dari heap.",
           "Slot root harus diisi kembali agar bentuk complete tetap terjaga.",
         ],
       },
       {
         short: "Move Last",
         title: "Elemen terakhir pindah ke root",
-        heap: [55, 30, 64, 7, 18, 42],
+        heap: [40, 30, 45, 10, 20, 35],
         highlightIndex: 0,
-        code: `last = 55
+        code: `last = 40
 heap[0] = last
 hapus index terakhir`,
         bullets: [
-          "Elemen terakhir 55 dipindahkan ke root.",
+          "Elemen terakhir 40 dipindahkan ke root.",
           "Ukuran heap berkurang satu.",
           "Bentuk complete aman, tetapi heap property belum tentu valid.",
         ],
@@ -178,42 +178,190 @@ hapus index terakhir`,
       {
         short: "Compare",
         title: "Pilih child yang lebih besar",
-        heap: [55, 30, 64, 7, 18, 42],
+        heap: [40, 30, 45, 10, 20, 35],
         highlightIndex: 2,
         code: `leftChild = 30
-rightChild = 64
-bestChild = 64`,
+rightChild = 45
+bestChild = 45`,
         bullets: [
           "Untuk Max-Heap, parent harus lebih besar dari dua child.",
-          "Child kanan 64 lebih besar dari child kiri 30.",
-          "Jika root 55 lebih kecil dari 64, swap diperlukan.",
+          "Child kanan 45 lebih besar dari child kiri 30.",
+          "Jika root 40 lebih kecil dari 45, swap diperlukan.",
         ],
       },
       {
         short: "Swap",
-        title: "55 turun, 64 naik",
-        heap: [64, 30, 55, 7, 18, 42],
+        title: "40 turun, 45 naik",
+        heap: [45, 30, 40, 10, 20, 35],
         highlightIndex: 2,
-        code: `55 < 64
+        code: `40 < 45
 swap index 0 dan 2`,
         bullets: [
-          "64 naik menjadi root.",
-          "55 turun ke index 2.",
+          "45 naik menjadi root.",
+          "40 turun ke index 2.",
           "Masih perlu cek child dari index 2.",
         ],
       },
       {
         short: "Valid",
         title: "Heapify-down selesai",
-        heap: [64, 30, 55, 7, 18, 42],
+        heap: [45, 30, 40, 10, 20, 35],
         highlightIndex: 0,
-        code: `child index 2 = 42
-55 >= 42
+        code: `child index 2 = 35
+40 >= 35
 selesai`,
         bullets: [
-          "Node 55 lebih besar dari child-nya, yaitu 42.",
+          "Node 40 lebih besar dari child-nya, yaitu 35.",
           "Tidak perlu swap lagi.",
           "Extract root selesai dan heap kembali valid.",
+        ],
+      },
+    ],
+  },
+  minInsert: {
+    label: "Min Insert 15",
+    title: "Insert 15 pada Min-Heap",
+    mode: "min",
+    steps: [
+      {
+        short: "Awal",
+        title: "Heap valid sebelum insert",
+        heap: [10, 30, 20, 50, 40, 25],
+        highlightIndex: null,
+        code: `heap = [10, 30, 20, 50, 40, 25]
+insert 15`,
+        bullets: [
+          "Root 10 adalah nilai terkecil saat ini.",
+          "Bentuk tree complete karena array terisi dari index 0 sampai 5.",
+          "Nilai baru tetap masuk di slot terakhir terlebih dulu.",
+        ],
+      },
+      {
+        short: "Append",
+        title: "15 masuk ke index terakhir",
+        heap: [10, 30, 20, 50, 40, 25, 15],
+        highlightIndex: 6,
+        code: `heap[6] = 15
+parentIndex = floor((6 - 1) / 2) = 2
+parent = 20`,
+        bullets: [
+          "Parent 15 adalah index 2, nilainya 20.",
+          "Untuk Min-Heap, parent harus lebih kecil atau sama dengan child.",
+          "Karena 15 lebih kecil dari 20, property heap rusak.",
+        ],
+      },
+      {
+        short: "Swap",
+        title: "15 naik melewati parent 20",
+        heap: [10, 30, 15, 50, 40, 25, 20],
+        highlightIndex: 2,
+        code: `15 < 20
+swap index 6 dan 2`,
+        bullets: [
+          "Nilai yang lebih kecil punya prioritas lebih tinggi di Min-Heap.",
+          "15 naik ke index 2.",
+          "Setelah swap, cek parent berikutnya.",
+        ],
+      },
+      {
+        short: "Cek",
+        title: "15 berhenti di bawah root",
+        heap: [10, 30, 15, 50, 40, 25, 20],
+        highlightIndex: 2,
+        code: `parentIndex = floor((2 - 1) / 2) = 0
+parent = 10
+15 > 10`,
+        bullets: [
+          "Parent baru 15 adalah root 10.",
+          "Karena 15 lebih besar dari 10, heapify-up berhenti.",
+          "Root tetap nilai terkecil.",
+        ],
+      },
+      {
+        short: "Valid",
+        title: "Heap property kembali valid",
+        heap: [10, 30, 15, 50, 40, 25, 20],
+        highlightIndex: 0,
+        code: `root = 10
+semua parent <= child`,
+        bullets: [
+          "Setiap parent lebih kecil atau sama dengan child langsungnya.",
+          "Array tidak harus sorted menaik.",
+          "Yang penting hanya relasi parent dan child.",
+        ],
+      },
+    ],
+  },
+  minDelete: {
+    label: "Min Delete",
+    title: "Extract root dari Min-Heap",
+    mode: "min",
+    steps: [
+      {
+        short: "Awal",
+        title: "Root siap diambil",
+        heap: [10, 30, 15, 50, 40, 25, 20],
+        highlightIndex: 0,
+        code: `removed = heap[0] = 10`,
+        bullets: [
+          "Pada Min-Heap, root adalah prioritas terkecil.",
+          "Nilai 10 akan dikeluarkan dari heap.",
+          "Elemen terakhir nanti dipakai untuk menutup slot root.",
+        ],
+      },
+      {
+        short: "Move Last",
+        title: "Elemen terakhir pindah ke root",
+        heap: [20, 30, 15, 50, 40, 25],
+        highlightIndex: 0,
+        code: `last = 20
+heap[0] = last
+hapus index terakhir`,
+        bullets: [
+          "Elemen terakhir 20 pindah ke root.",
+          "Bentuk complete tetap aman.",
+          "Namun root 20 lebih besar dari child 15, jadi perlu heapify-down.",
+        ],
+      },
+      {
+        short: "Compare",
+        title: "Pilih child yang lebih kecil",
+        heap: [20, 30, 15, 50, 40, 25],
+        highlightIndex: 2,
+        code: `leftChild = 30
+rightChild = 15
+bestChild = 15`,
+        bullets: [
+          "Untuk Min-Heap, child yang lebih kecil punya prioritas lebih tinggi.",
+          "Child kanan 15 lebih kecil dari child kiri 30.",
+          "Karena 20 lebih besar dari 15, swap diperlukan.",
+        ],
+      },
+      {
+        short: "Swap",
+        title: "20 turun, 15 naik",
+        heap: [15, 30, 20, 50, 40, 25],
+        highlightIndex: 2,
+        code: `20 > 15
+swap index 0 dan 2`,
+        bullets: [
+          "15 naik menjadi root baru.",
+          "20 turun ke index 2.",
+          "Cek child dari index 2 untuk memastikan property heap.",
+        ],
+      },
+      {
+        short: "Valid",
+        title: "Heapify-down selesai",
+        heap: [15, 30, 20, 50, 40, 25],
+        highlightIndex: 0,
+        code: `child index 2 = 25
+20 <= 25
+selesai`,
+        bullets: [
+          "Node 20 lebih kecil dari child-nya, yaitu 25.",
+          "Tidak ada pelanggaran lain.",
+          "Extract root selesai dan Min-Heap kembali valid.",
         ],
       },
     ],
@@ -388,7 +536,7 @@ export default function HeapTeachingApp() {
   const [singleInput, setSingleInput] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [stepIndex, setStepIndex] = useState(0);
-  const [processKey, setProcessKey] = useState("insertUp");
+  const [processKey, setProcessKey] = useState("maxInsert");
   const [processStep, setProcessStep] = useState(0);
   const [codeInput, setCodeInput] = useState(DEFAULT_CODE);
 
@@ -591,8 +739,46 @@ export default function HeapTeachingApp() {
             <label className="label">Sequence insert</label>
             <textarea value={sequenceInput} onChange={(event) => setSequenceInput(event.target.value)} />
             <div className="rbt-presets">
-              <button type="button" className="btn" onClick={() => setSequenceInput("42 18 64 7 30 55")}>Contoh A</button>
-              <button type="button" className="btn" onClick={() => setSequenceInput("10 4 15 20 0 8 2 30")}>Contoh B</button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  setMode("max");
+                  setSequenceInput("50 30 40 10 20 35 45");
+                }}
+              >
+                Max Insert
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  setMode("max");
+                  setSequenceInput("50 30 45 10 20 35 40");
+                }}
+              >
+                Max Delete
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  setMode("min");
+                  setSequenceInput("10 30 20 50 40 25 15");
+                }}
+              >
+                Min Insert
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  setMode("min");
+                  setSequenceInput("10 30 15 50 40 25 20");
+                }}
+              >
+                Min Delete
+              </button>
               <button type="button" className="btn ghost" onClick={() => setSequenceInput("")}>Clear</button>
             </div>
             <label className="label">Tambah 1 angka</label>
