@@ -1334,6 +1334,610 @@ textarea {
   background: #27496d;
 }
 
+.dsu-shell .hero {
+  background:
+    linear-gradient(135deg, rgba(32, 120, 103, 0.38), rgba(87, 187, 159, 0.1)),
+    #0c1f22;
+  border-color: #3e756c;
+}
+
+.dsu-card {
+  border-color: rgba(87, 187, 159, 0.3);
+}
+
+.dsu-badge,
+.dsu-hero .kicker {
+  color: #bffbea;
+}
+
+.dsu-lesson-item,
+.dsu-property {
+  background: #102526;
+  border-color: #335e58;
+}
+
+.dsu-property span {
+  background: #207867;
+}
+
+.dsu-canvas-panel {
+  padding: 16px;
+  background:
+    linear-gradient(180deg, rgba(32, 120, 103, 0.14), rgba(9, 18, 26, 0.96)),
+    #0b151c;
+  border-color: #315c58;
+}
+
+.dsu-walk-layout,
+.dsu-graph-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 14px;
+  align-items: start;
+}
+
+.dsu-graph-layout {
+  grid-template-columns: 230px minmax(300px, 1fr) minmax(260px, 0.8fr) 300px;
+  margin-top: 14px;
+}
+
+.dsu-builder-grid {
+  grid-template-columns: 300px minmax(0, 1fr) 320px;
+}
+
+.dsu-diagram {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.dsu-group {
+  border: 1px solid #315c58;
+  border-radius: 12px;
+  background: rgba(12, 31, 34, 0.72);
+  padding: 12px;
+}
+
+.dsu-root {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.dsu-root span,
+.dsu-root small,
+.dsu-node span {
+  color: #a8d7cf;
+  font-size: 12px;
+}
+
+.dsu-root strong {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #207867;
+  color: #ffffff;
+}
+
+.dsu-members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dsu-node {
+  min-width: 58px;
+  border: 1px solid #3b7169;
+  border-radius: 10px;
+  background: #0d1b23;
+  padding: 8px;
+  text-align: center;
+}
+
+.dsu-node.active {
+  border-color: #facc15;
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.16);
+}
+
+.dsu-node strong,
+.dsu-node span {
+  display: block;
+}
+
+.dsu-table-wrap {
+  overflow: auto;
+}
+
+.dsu-table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.dsu-table th,
+.dsu-table td {
+  border: 1px solid #315c58;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.dsu-table th,
+.dsu-table td:first-child {
+  background: #102526;
+  color: #d8fff3;
+  font-weight: 700;
+}
+
+.dsu-code-snippet {
+  border-color: #2d6257;
+  background: #071817;
+  color: #d8fff3;
+}
+
+.dsu-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #3b7169;
+  background: #102526;
+  border-radius: 10px;
+  padding: 9px 12px;
+  color: #d8fff3;
+  font-weight: 700;
+}
+
+.dsu-ops-editor {
+  min-height: 210px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.dsu-edge-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dsu-edge-list span {
+  border: 1px solid #3b4479;
+  border-radius: 999px;
+  background: #151a31;
+  padding: 8px 11px;
+  font-weight: 700;
+}
+
+.dsu-edge-list span.accepted {
+  border-color: #34d399;
+  background: rgba(52, 211, 153, 0.14);
+  color: #c8ffea;
+}
+
+.dsu-edge-list span.rejected {
+  border-color: #fb7185;
+  background: rgba(251, 113, 133, 0.14);
+  color: #ffe0e6;
+}
+
+.dsu-graph-canvas {
+  display: grid;
+  gap: 10px;
+}
+
+.dsu-graph-canvas svg {
+  width: 100%;
+  min-height: 260px;
+  display: block;
+}
+
+.dsu-graph-edge {
+  stroke: #4a5872;
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.dsu-graph-edge.accepted {
+  stroke: #34d399;
+}
+
+.dsu-graph-edge.rejected {
+  stroke: #fb7185;
+  stroke-dasharray: 10 8;
+}
+
+.dsu-graph-edge-label {
+  fill: #b8c7dd;
+  font-size: 13px;
+  font-weight: 800;
+  paint-order: stroke;
+  stroke: #0b151c;
+  stroke-width: 4px;
+}
+
+.dsu-graph-edge-label.accepted {
+  fill: #c8ffea;
+}
+
+.dsu-graph-edge-label.rejected {
+  fill: #ffe0e6;
+}
+
+.dsu-graph-node {
+  fill: #123431;
+  stroke: #8ee7d1;
+  stroke-width: 3;
+}
+
+.dsu-graph-node-text {
+  fill: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.dsu-graph-legend {
+  display: grid;
+  gap: 7px;
+  color: #c5ddd8;
+  font-size: 13px;
+}
+
+.dsu-graph-legend span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dsu-graph-legend b {
+  width: 22px;
+  height: 5px;
+  border-radius: 999px;
+}
+
+.dsu-graph-legend b.accepted {
+  background: #34d399;
+}
+
+.dsu-graph-legend b.rejected {
+  background: #fb7185;
+}
+
+.dsu-usage-layout {
+  margin-top: 16px;
+}
+
+.dsu-reading-grid,
+.dsu-operation-grid,
+.dsu-invariant-grid,
+.dsu-mistake-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.dsu-reading-card,
+.dsu-invariant,
+.dsu-mistake {
+  border: 1px solid #335e58;
+  border-radius: 12px;
+  background: #102526;
+  padding: 14px;
+}
+
+.dsu-reading-card h3,
+.dsu-operation-card h3 {
+  margin: 0 0 8px;
+}
+
+.dsu-reading-tag {
+  display: inline-flex;
+  margin-bottom: 10px;
+  border: 1px solid #4b9c8c;
+  border-radius: 999px;
+  background: rgba(32, 120, 103, 0.18);
+  color: #bffbea;
+  padding: 5px 9px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.dsu-reading-card p,
+.dsu-operation-card p,
+.dsu-invariant p,
+.dsu-mistake p {
+  margin: 8px 0 0;
+  line-height: 1.55;
+}
+
+.dsu-example-box {
+  margin-top: 14px;
+  border-left: 3px solid #8ee7d1;
+  background: rgba(7, 24, 23, 0.68);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.dsu-example-box strong,
+.dsu-example-box span {
+  display: block;
+}
+
+.dsu-example-box strong {
+  color: #bffbea;
+  font-size: 12px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dsu-example-box span {
+  color: #d8fff3;
+  line-height: 1.45;
+}
+
+.dsu-invariant,
+.dsu-mistake {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.dsu-invariant span,
+.dsu-mistake span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border-radius: 8px;
+  background: #207867;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.dsu-operation-grid {
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+}
+
+.dsu-operation-card .source-code-block {
+  margin-top: 12px;
+}
+
+.dsu-trace-table-wrap {
+  overflow: auto;
+}
+
+.dsu-trace-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.dsu-trace-table th,
+.dsu-trace-table td {
+  border: 1px solid #315c58;
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.dsu-trace-table th {
+  background: #102526;
+  color: #d8fff3;
+}
+
+.dsu-trace-table code {
+  color: #a7f3d0;
+}
+
+.dsu-exercise-list {
+  margin: 0;
+  padding-left: 22px;
+  display: grid;
+  gap: 10px;
+  line-height: 1.55;
+}
+
+.dsu-story-card {
+  background:
+    linear-gradient(135deg, rgba(32, 120, 103, 0.2), rgba(16, 37, 38, 0.95)),
+    #102526;
+}
+
+.dsu-story-grid,
+.dsu-comic-grid,
+.dsu-before-after {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+.dsu-story-panel,
+.dsu-comic-panel,
+.dsu-path-card {
+  border: 1px solid #3b7169;
+  border-radius: 12px;
+  background: rgba(7, 24, 23, 0.78);
+  padding: 14px;
+}
+
+.dsu-story-label,
+.dsu-comic-number {
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #207867;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 0 8px;
+}
+
+.dsu-story-panel h3,
+.dsu-comic-panel h3,
+.dsu-path-card h3 {
+  margin: 10px 0 8px;
+}
+
+.dsu-story-panel p,
+.dsu-comic-panel p,
+.dsu-path-card p {
+  color: #c5ddd8;
+  line-height: 1.55;
+}
+
+.dsu-story-panel strong {
+  display: block;
+  margin-top: 12px;
+  color: #bffbea;
+}
+
+.dsu-analogy-flow {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr) minmax(220px, 1fr);
+  gap: 12px;
+  align-items: stretch;
+  margin-top: 14px;
+}
+
+.dsu-mini-set {
+  border: 1px solid #3b7169;
+  border-radius: 12px;
+  background: #071817;
+  padding: 12px;
+}
+
+.dsu-mini-root {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.dsu-mini-root span,
+.dsu-mini-set small,
+.dsu-flow-result > span {
+  color: #9ccfc7;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dsu-mini-root strong,
+.dsu-dot-row span,
+.dsu-chain span,
+.dsu-star-root span {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid #8ee7d1;
+  background: #123431;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.dsu-mini-members,
+.dsu-dot-row,
+.dsu-chain,
+.dsu-union-picture,
+.dsu-star-root {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.dsu-mini-members span {
+  border: 1px solid #315c58;
+  border-radius: 999px;
+  background: #102526;
+  color: #d8fff3;
+  padding: 6px 10px;
+  font-weight: 700;
+}
+
+.dsu-flow-action,
+.dsu-compress-arrow {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 6px;
+  min-width: 130px;
+  border: 1px dashed #6cc8b7;
+  border-radius: 12px;
+  color: #d8fff3;
+  text-align: center;
+  padding: 12px;
+}
+
+.dsu-flow-action span,
+.dsu-compress-arrow span {
+  color: #bffbea;
+  font-weight: 800;
+}
+
+.dsu-flow-action strong,
+.dsu-compress-arrow strong {
+  color: #9ccfc7;
+  font-size: 12px;
+}
+
+.dsu-flow-result {
+  border: 1px solid #3b7169;
+  border-radius: 12px;
+  background: rgba(32, 120, 103, 0.18);
+  padding: 12px;
+}
+
+.dsu-flow-result .dsu-mini-set {
+  margin-top: 8px;
+}
+
+.dsu-chain b,
+.dsu-union-picture b {
+  color: #8ee7d1;
+  font-size: 22px;
+}
+
+.dsu-chain .root,
+.dsu-star-root .root {
+  background: #207867;
+  border-color: #d8fff3;
+}
+
+.dsu-before-after {
+  grid-template-columns: minmax(240px, 1fr) 150px minmax(240px, 1fr);
+  align-items: stretch;
+}
+
+.dsu-star-root {
+  min-height: 90px;
+  justify-content: center;
+  position: relative;
+}
+
+.dsu-star-root span:not(.root) {
+  width: 38px;
+  height: 38px;
+  background: #0d1b23;
+}
+
+@media (max-width: 980px) {
+  .dsu-walk-layout,
+  .dsu-graph-layout,
+  .dsu-builder-grid,
+  .dsu-analogy-flow,
+  .dsu-before-after {
+    grid-template-columns: 1fr;
+  }
+}
+
 .btree-process-canvas .tree-scroll,
 .heap-process-canvas .tree-scroll {
   min-height: 390px;

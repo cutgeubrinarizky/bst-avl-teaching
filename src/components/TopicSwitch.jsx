@@ -30,6 +30,13 @@ export default function TopicSwitch({ topic, setTopic }) {
       >
         Heap
       </button>
+      <button
+        type="button"
+        className={topic === "dsu" ? "active" : ""}
+        onClick={() => setTopic("dsu")}
+      >
+        Disjoint Set
+      </button>
     </nav>
   );
 }
